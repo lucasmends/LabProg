@@ -1,0 +1,8 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Trabalhos da cadeira de Labpratório de Progrmação 2
+${licensePrefix}Instituto Militar de Engenharia
+<#if licenseLast??>
+${licenseLast}
+</#if>
