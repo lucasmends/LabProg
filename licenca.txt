@@ -1,7 +1,7 @@
 <#if licenseFirst??>
 ${licenseFirst}
 </#if>
-${licensePrefix}Trabalhos da cadeira de Labpratório de Progrmação 2
+${licensePrefix}Trabalhos da cadeira de Laboratório de Progrmação 2
 ${licensePrefix}Instituto Militar de Engenharia
 <#if licenseLast??>
 ${licenseLast}
