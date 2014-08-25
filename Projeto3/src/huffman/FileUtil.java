@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package core;
+package huffman;
 
 import huffman.lista.ListaDeFrequencia;
 import huffman.lista.ListaFreq;
@@ -33,6 +33,7 @@ public class FileUtil {
         while (lista.tamanho() > 0) {
             TreeLeaf a = (TreeLeaf) lista.retiraMenor();
             out.write(a.getValue());
+            out.write(a.peso());
         }
     }
 

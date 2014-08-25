@@ -6,7 +6,7 @@
 
 package gui;
 
-import huffman.HuffmanInterface;
+import huffman.Interface;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -94,7 +94,7 @@ public class GUI extends JFrame{
     private void CompactarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompactarActionPerformed
         if(this.arquivo != null){
 
-            HuffmanInterface huff = new HuffmanInterface(this.arquivo);
+            Interface huff = new Interface(this.arquivo);
             huff.compactar();
             Mensagem.setText("Selecione um arquivo");
         }

@@ -5,6 +5,9 @@
  */
 package huffman.tree;
 
+import huffman.lista.ListaDeFrequencia;
+import huffman.lista.ListaFreq;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -53,4 +56,28 @@ public class TreeUtil {
         }
         return null;
     }
+    
+    /**
+     * Função para montar a árvore de Huffman
+     *
+     * @param arquivo arquivo para se montar a árvore
+     * @param n o número de blocos
+     * 
+     * @return retorna a árvore de Huffman
+     */
+    public static TreeAbstract montarArvore(File arquivo, int n) {
+        //montando a árvore
+        //pegando a lista de frequencia
+        ListaFreq lista = new ListaDeFrequencia(n, arquivo);
+        TreeAbstract arvore = null;
+        //algoritmo para montar a árvore
+        while (lista.tamanho() >= 2) {
+            TreeAbstract x = lista.retiraMenor();
+            TreeAbstract y = lista.retiraMenor();
+            arvore = new TreeNode(x, y);
+            arvore.setPeso(x.peso() + y.peso());
+            lista.inserir(arvore);
+        }
+        return arvore;
+    }    
 }

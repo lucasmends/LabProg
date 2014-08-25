@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package huffman;
+package huffman.io;
 
-import core.FileUtil;
 import gui.TempoRestante;
-import huffman.lista.ListaDeFrequencia;
-import huffman.lista.ListaFreq;
+import huffman.FileUtil;
 import huffman.tree.TreeAbstract;
-import huffman.tree.TreeNode;
+import huffman.tree.TreeUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -23,90 +21,42 @@ import javax.swing.Timer;
  *
  * @author lucas
  */
-public class HuffmanInterface {
+public class MendesCompactar implements Compactar {
 
     private final File arquivo;
-    private final int n;
-
+    private final int n;   
+    
     /**
-     * Construtor que calcula o bloco autamaticamente.
-     *
+     * Construtor.
+     * 
      * @param arquivo arquivo a ser compactado
+     * @param n número de blocos
      */
-    public HuffmanInterface(File arquivo) {
-        this.arquivo = arquivo;
-        if (this.arquivo.length() < 204800) {
-            if (this.arquivo.length() < 102400) {
-                this.n = 1024;
-            } else {
-                this.n = 102400;
-            }
-        } else {
-            this.n = 204800;
-        }
-    }
-
-    /**
-     * Construtor com tamanho do bloco definido.
-     *
-     * @param arquivo arquivo a ser compactado
-     * @param n tamanho do bloco
-     */
-    public HuffmanInterface(File arquivo, int n) {
+    public MendesCompactar(File arquivo, int n){
         this.arquivo = arquivo;
         this.n = n;
     }
-
-    /**
-     * Compactar usando o huffman.
-     *
-     * @param nome o nome do arquivo de destino
-     * @return retorna o arquivo salvo
-     */
-    public File compactar(String nome) {
-        //montando a árvore
-        final TreeAbstract arvore = montarArvore();
-
-        final File salvar = new File(nome);
-
-        try {
-            //escrever a árvore de huffman
-            treeHuffmantoWrite(arvore, salvar);
-            return salvar;
-        } catch (IOException ex) {
-            System.err.println("Erro em gerar o arquivo");
-        }
-        return null;
-    }
-
-    /**
-     * Compactar usando o huffman.
-     *
-     * @return retorna o arquivo salvo
-     */
+    
+    @Override
     public File compactar() {
         return compactar(new StringBuilder(arquivo.getAbsolutePath()).append("0").toString());
     }
 
-    /**
-     * Função para montar a árvore de Huffman
-     *
-     * @return retorna a árvore de Huffman
-     */
-    private TreeAbstract montarArvore() {
+    @Override
+    public File compactar(String nome) {
         //montando a árvore
-        //pegando a lista de frequencia
-        ListaFreq lista = new ListaDeFrequencia(n, arquivo);
-        TreeAbstract arvore = null;
-        //algoritmo para montar a árvore
-        while (lista.tamanho() >= 2) {
-            TreeAbstract x = lista.retiraMenor();
-            TreeAbstract y = lista.retiraMenor();
-            arvore = new TreeNode(x, y);
-            arvore.setPeso(x.peso() + y.peso());
-            lista.inserir(arvore);
+        final TreeAbstract arvore = TreeUtil.montarArvore(arquivo, n);
+
+        final File arquivoCompactado = new File(nome);
+
+        try {
+            //escrever a árvore de huffman
+            treeHuffmantoWrite(arvore, arquivoCompactado);
+            return arquivoCompactado;
+        } catch (IOException ex) {
+            System.err.println("Erro em gerar o arquivo");
         }
-        return arvore;
+        return null;
     }
 
     /**
@@ -155,6 +105,6 @@ public class HuffmanInterface {
             }
         }.start();
 
-    }
-
+    }    
+    
 }
