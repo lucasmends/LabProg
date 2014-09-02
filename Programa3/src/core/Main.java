@@ -6,7 +6,6 @@
 package core;
 
 import gui.GUI;
-import huffman.Interface;
 import java.io.File;
 
 /**
@@ -30,8 +29,8 @@ public class Main {
             });
             dialog.setVisible(true);
         } else {
-            System.out.println("Compactando");
-            new Interface(new File(args[0])).compactar();
+            System.out.println("Compactando " + args[0]);
+            new huffman.Interface(new File(args[0]), false).compactar();
         }
 
     }

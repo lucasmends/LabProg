@@ -51,6 +51,14 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CompactarActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JButton" name="Descompactar">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Descompactar"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DescompactarActionPerformed"/>
+          </Events>
+        </Component>
       </SubComponents>
       <LayoutCode>
         <CodeStatement>

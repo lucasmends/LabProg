@@ -16,41 +16,19 @@ import huffman.io.CompactarFactory;
 public class Interface {
 
     private final File arquivo;
-    private final int n;
-
+    private final boolean janela;
+    
     /**
      * Construtor que calcula o bloco autamaticamente.
      *
      * @param arquivo arquivo a ser compactado
+     * @param janela se deseja a janela de progresso
      */
-    public Interface(File arquivo) {
+    public Interface(File arquivo, boolean janela) {
         this.arquivo = arquivo;
-
-        if (this.arquivo.length() < 204800) {
-            if (this.arquivo.length() < 102400) {
-                if (this.arquivo.length() < 1024) {
-                    this.n = 64;
-                } else {
-                    this.n = 1024;
-                }
-            } else {
-                this.n = 102400;
-            }
-        } else {
-            this.n = 204800;
-        }
+        this.janela = janela;
     }
 
-    /**
-     * Construtor com tamanho do bloco definido.
-     *
-     * @param arquivo arquivo a ser compactado
-     * @param n tamanho do bloco
-     */
-    public Interface(File arquivo, int n) {
-        this.arquivo = arquivo;
-        this.n = n;
-    }
 
     /**
      * Compactar usando o huffman.
@@ -59,7 +37,7 @@ public class Interface {
      * @return retorna o arquivo salvo
      */
     public File compactar(String nome) {
-        Compactar compactador = CompactarFactory.criarCompactador(arquivo, n);
+        Compactar compactador = CompactarFactory.criarCompactador2(arquivo, janela);
         return compactador.compactar(nome);
     }
 

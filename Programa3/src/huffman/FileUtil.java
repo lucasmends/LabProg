@@ -10,8 +10,11 @@ import huffman.lista.ListaFreq;
 import huffman.tree.TreeAbstract;
 import huffman.tree.TreeLeaf;
 import huffman.tree.TreeUtil;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  *
@@ -21,14 +24,13 @@ public class FileUtil {
 
     /**
      * Escreve a lista de frequência.
+     *
      * @param out fluxo para escrever no arquivo
-     * @param byteArquivo os bytes do arquivo
-     * @param n bloco
-     * @throws IOException 
+     * @param arquivo arquivo a ser usado
+     * @throws IOException
      */
-    public static void writeLista(FileOutputStream out, byte[] byteArquivo, int n) throws IOException {
-        ListaFreq lista = new ListaDeFrequencia(n, byteArquivo);
-        out.write(n);
+    public static void writeLista(FileOutputStream out, File arquivo) throws IOException {
+        ListaFreq lista = new ListaDeFrequencia(arquivo);
         out.write(lista.tamanho());
         while (lista.tamanho() > 0) {
             TreeLeaf a = (TreeLeaf) lista.retiraMenor();
@@ -39,12 +41,13 @@ public class FileUtil {
 
     /**
      * Pega o a codificação em bytes do bloco informado e escreve no arquivo.
+     *
      * @param out fluxo para escrever no arquivo
      * @param arvore a árvore de huffman do arquivo
      * @param bloco o bloco a ser usado
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void writeTree(FileOutputStream out, TreeAbstract arvore, byte[] bloco) throws IOException {
+    public static void writeTree(FileOutputStream out, TreeAbstract arvore, Character bloco) throws IOException {
         StringBuilder bytes = new StringBuilder();
         bytes.append(TreeUtil.pegarNivel(arvore, bloco));
         if (bytes.length() > 7) {
@@ -61,4 +64,57 @@ public class FileUtil {
             out.write(resposta);
         }
     }
+
+    /**
+     * Função que encontra o valor correspondente do bloco no mapa e escreve se
+     * for necessário
+     *
+     * @param out o Stream para o arquivo a ser salvo
+     * @param mapa o mapa a ser usado
+     * @param bloco o bloco correspondente
+     * @param bytes a codificação achada anteriormente
+     * @throws IOException
+     */
+    public static void writeTree(FileOutputStream out, Map<Character, String> mapa, Character bloco, StringBuilder bytes) throws IOException {
+
+        bytes.append(mapa.get(bloco));
+        while (bytes.length() > 8) {
+            String byteGravar = bytes.substring(0, 8);
+            try {
+                out.write(converterStringtoByte(byteGravar));
+                bytes = new StringBuilder(bytes.substring(8));
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Função para converter uma String de 0s e 1s para o byte correspondente.
+     *
+     * @param bits a String contendo os bits
+     * @return retorna a conversão para byte
+     * @throws Exception gera exceção se a string for tiver mais de 8 membros ou
+     * conter elementos diferentes de 0 ou 1
+     */
+    public static byte converterStringtoByte(String bits) throws Exception {
+        if (bits.length() > 8) {
+            throw new Exception("Byte contendo mais de oito bits");
+        }
+        if (!(bits.contains("0") | bits.contains("1"))) {
+            throw new Exception("String contém caracteres diferentes de 0 ou 1");
+        }
+
+        byte resposta = 0;
+        for (int i = 0; i < bits.length(); i++) {
+            if (i != 0) {
+                resposta = (byte) (resposta << 1);
+            }
+            if (bits.charAt(i) == '1') {
+                resposta = (byte) (resposta | 1);
+            }
+        }
+        return resposta;
+    }
+
 }

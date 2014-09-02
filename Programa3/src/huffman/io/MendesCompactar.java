@@ -11,8 +11,10 @@ import huffman.tree.TreeAbstract;
 import huffman.tree.TreeUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.swing.Timer;
@@ -24,19 +26,30 @@ import javax.swing.Timer;
 public class MendesCompactar implements Compactar {
 
     private final File arquivo;
-    private final int n;   
-    
+    ;
+    private final boolean janela;
+
     /**
      * Construtor.
-     * 
+     *
      * @param arquivo arquivo a ser compactado
-     * @param n número de blocos
      */
-    public MendesCompactar(File arquivo, int n){
+    public MendesCompactar(File arquivo) {
         this.arquivo = arquivo;
-        this.n = n;
+        this.janela = true;
     }
-    
+
+    /**
+     * Construtor.
+     *
+     * @param arquivo arquivo a ser compactado
+     * @param janela se deseja mostrar a janela de progresso
+     */
+    public MendesCompactar(File arquivo, boolean janela) {
+        this.arquivo = arquivo;
+        this.janela = janela;
+    }
+
     @Override
     public File compactar() {
         return compactar(new StringBuilder(arquivo.getAbsolutePath()).append("0").toString());
@@ -44,14 +57,18 @@ public class MendesCompactar implements Compactar {
 
     @Override
     public File compactar(String nome) {
-        //montando a árvore
-        final TreeAbstract arvore = TreeUtil.montarArvore(arquivo, n);
 
         final File arquivoCompactado = new File(nome);
 
         try {
+            //montando a árvore
+            final TreeAbstract arvore = TreeUtil.montarArvore(arquivo);
             //escrever a árvore de huffman
-            treeHuffmantoWrite(arvore, arquivoCompactado);
+            if (janela) {
+                writeJanela(arvore, arquivoCompactado);
+            } else {
+                write(arvore, arquivoCompactado);
+            }
             return arquivoCompactado;
         } catch (IOException ex) {
             System.err.println("Erro em gerar o arquivo");
@@ -60,17 +77,16 @@ public class MendesCompactar implements Compactar {
     }
 
     /**
-     * Grava o arquivo.
+     * Grava o arquivo com a janela de progresso.
      *
      * @param arvore a árvore a ser usada
      * @param salvar o arquivo a ser salvo
+     * @param byteArquivo os bytes do arquivo usado
      */
-    private void treeHuffmantoWrite(final TreeAbstract arvore, final File salvar) throws IOException {
+    private void writeJanela(final TreeAbstract arvore, final File salvar) throws IOException {
         //criando o arquivo
         salvar.createNewFile();
         final FileOutputStream out = new FileOutputStream(salvar);
-        //todos os bytes do arquivo
-        final byte[] byteArquivo = Files.readAllBytes(arquivo.toPath());
         //a janela com o progresso
         final TempoRestante janelaVisual = new TempoRestante(null, true);
         Thread janelaThread = new Thread(janelaVisual);
@@ -79,15 +95,23 @@ public class MendesCompactar implements Compactar {
         new Thread() {
             @Override
             public void run() {
-                int totalB = byteArquivo.length / n;
+
+                int totalB = (int) arquivo.length();
+                int j = 0;
                 try {
-                    FileUtil.writeLista(out, byteArquivo, n);
-                    for (int i = 0, j = 1; i + n < byteArquivo.length; i = i + n, j++) {
-                        byte[] aux = new byte[n];
-                        System.arraycopy(byteArquivo, i, aux, 0, n);
-                        FileUtil.writeTree(out, arvore, aux);
+                    BufferedReader in = new BufferedReader(new FileReader(arquivo));
+                    int atual = in.read();
+
+                    FileUtil.writeLista(out, arquivo);
+
+                    while (atual != -1) {
+                        Character bloco = (char) atual;
+                        FileUtil.writeTree(out, arvore, bloco);
+                        j += 2;
                         janelaVisual.setProgresso((j * 100) / totalB);
+                        atual = in.read();
                     }
+
                 } catch (IOException ex) {
                     System.err.println("Erro em gerar o arquivo na conversão de bytes");
                 }
@@ -105,6 +129,35 @@ public class MendesCompactar implements Compactar {
             }
         }.start();
 
-    }    
-    
+    }
+
+    /**
+     * Grava o arquivo sem a janela de progresso.
+     *
+     * @param arvore a árvore a ser usada
+     * @param salvar o arquivo a ser salvo
+     * @param byteArquivo os bytes do arquivo usado
+     */
+    private void write(final TreeAbstract arvore, final File salvar) throws IOException {
+        //criando o arquivo
+        salvar.createNewFile();
+        final FileOutputStream out = new FileOutputStream(salvar);
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(arquivo));
+            int atual = in.read();
+
+            FileUtil.writeLista(out, arquivo);
+
+            while (atual != -1) {
+                Character bloco = (char) atual;
+                FileUtil.writeTree(out, arvore, bloco);
+                atual = in.read();
+            }
+        } catch (IOException ex) {
+            System.err.println("Erro em gerar o arquivo na conversão de bytes");
+        }
+        float taxa = ((float) salvar.length() * (float) 100) / (float) arquivo.length();
+        System.out.println("Taxa de compressão: " + taxa + "%");
+    }
+
 }

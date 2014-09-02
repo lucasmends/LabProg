@@ -7,6 +7,8 @@
 package gui;
 
 import huffman.Interface;
+import huffman.io.Descompactar;
+import huffman.io.DescompactarMendes;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -39,6 +41,7 @@ public class GUI extends JFrame{
         Painel = new javax.swing.JPanel();
         Arquivo = new javax.swing.JButton();
         Compactar = new javax.swing.JButton();
+        Descompactar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Árvore de Huffman");
@@ -68,6 +71,14 @@ public class GUI extends JFrame{
         });
         Painel.add(Compactar);
 
+        Descompactar.setText("Descompactar");
+        Descompactar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DescompactarActionPerformed(evt);
+            }
+        });
+        Painel.add(Descompactar);
+
         getContentPane().add(Painel);
 
         pack();
@@ -94,15 +105,30 @@ public class GUI extends JFrame{
     private void CompactarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompactarActionPerformed
         if(this.arquivo != null){
 
-            Interface huff = new Interface(this.arquivo);
+            Interface huff = new Interface(this.arquivo, true);
             huff.compactar();
+            this.arquivo = null;
             Mensagem.setText("Selecione um arquivo");
         }
     }//GEN-LAST:event_CompactarActionPerformed
 
+    /**
+     * Se tiver um arquivo selecionado, descompacta ele
+     * @param evt evento
+     */
+    private void DescompactarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DescompactarActionPerformed
+        if(this.arquivo != null){
+            Descompactar des = new DescompactarMendes();
+            des.descompactar(this.arquivo);
+            this.arquivo = null;
+            Mensagem.setText("Selecione um arquivo");
+        }
+    }//GEN-LAST:event_DescompactarActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Arquivo;
     private javax.swing.JButton Compactar;
+    private javax.swing.JButton Descompactar;
     private javax.swing.JLabel Mensagem;
     private javax.swing.JPanel Painel;
     // End of variables declaration//GEN-END:variables

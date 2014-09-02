@@ -12,13 +12,13 @@ package huffman.tree;
  */
 public class TreeLeaf extends TreeAbstract{
     
-    private final byte[] valor;
+    private final Character valor;
 
     /**
      * Para criar a folha da árvore de huffman.
      * @param valor O valor da folha
      */
-    public TreeLeaf(byte[] valor) {
+    public TreeLeaf(Character valor) {
         super(null, null);
         this.valor = valor;
     }
@@ -27,7 +27,7 @@ public class TreeLeaf extends TreeAbstract{
      * Pegar os bytes originais da folha
      * @return retorna os bytes da folha
      */
-    public byte[] getValue(){
+    public Character getValue(){
         return this.valor;
     }      
 
