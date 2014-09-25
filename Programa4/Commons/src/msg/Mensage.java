@@ -1,0 +1,52 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package msg;
+
+import java.io.Serializable;
+
+/**
+ *
+ * @author lucas
+ */
+public class Mensage implements Serializable{
+    private final int code;
+    private final String mensage;
+    private final String login;
+    
+    /**
+     * Constructor
+     * @param code the mensage's code
+     * @param login the username
+     * @param mensage the mensage
+     */
+    public Mensage(int code, String login, String mensage){
+        this.code = code;
+        this.login = login;
+        this.mensage = mensage;
+    }
+
+    /**
+     * @return the mensage
+     */
+    public String getMensage() {
+        return mensage;
+    }
+
+    /**
+     * @return the login
+     */
+    public String getLogin() {
+        return login;
+    }
+
+    /**
+     * @return the code
+     */
+    public int getCode() {
+        return code;
+    }
+}
