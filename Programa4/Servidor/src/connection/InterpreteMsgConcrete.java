@@ -8,6 +8,7 @@ package connection;
 
 import client.Client;
 import client.AbstractClient;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import mediator.ConcreteConnection;
 import mediator.Connection;
@@ -27,10 +28,10 @@ public class InterpreteMsgConcrete implements InterpreteMsg{
     }
     
     @Override
-    public synchronized void parseMsg(Object msg, Socket socket) {
+    public synchronized void parseMsg(Object msg, Socket socket, ObjectInputStream receive) {
         if(msg instanceof Mensage){
             Mensage mensage = (Mensage) msg;
-            AbstractClient client = new Client(socket, mensage.getLogin());
+            AbstractClient client = new Client(socket, mensage.getLogin(), receive);
             
             switch(mensage.getCode()){
                 case Codes.LOGIN:                   

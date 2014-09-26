@@ -7,6 +7,7 @@
 package msg;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -16,6 +17,7 @@ public class Mensage implements Serializable{
     private final int code;
     private final String mensage;
     private final String login;
+    private final String data;
     
     /**
      * Constructor
@@ -27,6 +29,7 @@ public class Mensage implements Serializable{
         this.code = code;
         this.login = login;
         this.mensage = mensage;
+        this.data = String.format("%td/%<tm/%<tY as %<tT", new Date());
     }
 
     /**
@@ -49,4 +52,13 @@ public class Mensage implements Serializable{
     public int getCode() {
         return code;
     }
+
+    /**
+     * @return the data
+     */
+    public String getData() {
+        return data;
+    }
+    
+    
 }

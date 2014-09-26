@@ -16,7 +16,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Server(4095);
+        new Server(4096).start();
     }
     
 }

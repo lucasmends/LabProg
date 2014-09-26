@@ -42,6 +42,11 @@ public interface Connection {
     public void disconnet(AbstractClient client);
 
     /**
+     * Force a client to disconnect
+     * @param client client to be disconnected
+     */
+    public void pop(AbstractClient client);
+    /**
      * Update the Client's list for all clients.
      */
     public void updateClientList();

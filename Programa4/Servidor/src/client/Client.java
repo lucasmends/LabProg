@@ -5,6 +5,7 @@
  */
 package client;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -18,9 +19,11 @@ import msg.Mensage;
 public final class Client extends AbstractClient implements Runnable {
 
     private ObjectOutputStream sendMensage;
+    private final ObjectInputStream receive;
 
-    public Client(Socket socket, String login) {
+    public Client(Socket socket, String login, ObjectInputStream receive) {
         super(socket, login);
+        this.receive = receive;
         try {
             sendMensage = new ObjectOutputStream(clientSocket.getOutputStream());
         } catch (Exception e) {
@@ -29,30 +32,26 @@ public final class Client extends AbstractClient implements Runnable {
         }
     }
 
-
     @Override
     public void run() {
-        ObjectInputStream receive;
-
-        try {
-            receive = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (Exception e) {
-            System.err.println("Error code: " + Codes.ERROR_CREATE_INPUTSTREAM + "from: " + this.getLogin() + ", ip: " + this.getIP());
-            mediator.disconnet(this);
-            return;
-        }
-
         while (true) {
             Object msg = null;
             try {
                 msg = receive.readObject();
+
+                //System.out.println("Lido algo " + a.getCode());
             } catch (Exception e) {
-                System.err.println("Error code: " + Codes.ERROR_RECEIVE_MSG + this.getLogin() + ", ip: " + this.getIP());
-                mediator.disconnet(this);
+                System.err.println("Error code: " + Codes.ERROR_RECEIVE_MSG + " from: " + this.getLogin() + ", ip: " + this.getIP());
+                mediator.pop(this);
                 return;
             }
 
             mediator.receiveMsg(msg);
+            
+            Mensage a = (Mensage) msg;
+            if (a.getCode() == Codes.DISCONNECT) {
+                return;
+            }
         }
 
     }
@@ -67,7 +66,15 @@ public final class Client extends AbstractClient implements Runnable {
     }
 
     @Override
-    public synchronized boolean checkOutputStream() {
+    public boolean checkOutputStream() {
         return (sendMensage != null);
     }
+
+    @Override
+    public void disconnect() throws IOException {
+
+        this.sendMensage(new Mensage(Codes.DISCONNECT_SUCCESS, this.getLogin(), null));
+        this.clientSocket.close();
+    }
+    
 }

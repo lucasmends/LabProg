@@ -50,20 +50,11 @@ public abstract class AbstractClient {
     public abstract void sendMensage(Mensage msg);
 
     /**
-     * Check if the OutPutStream was created
-     *
-     * @return true if it was or false if doesn't
-     */
-    public abstract boolean checkOutputStream();
-
-    /**
      * Disconnect this client.
      *
      * @throws IOException
      */
-    public void disconnect() throws IOException {
-        this.clientSocket.close();
-    }
+    public abstract void disconnect() throws IOException;
 
     /**
      * The Client's IP
@@ -72,5 +63,19 @@ public abstract class AbstractClient {
      */
     public String getIP() {
         return clientSocket.getInetAddress().getHostAddress();
+    }
+    
+    /**
+     * Check if the OutputStream was created.
+     * @return true if it was, false if it doesn't
+     */
+    public abstract boolean checkOutputStream();
+    
+    /**
+     * Force to disconnect
+     * @throws IOException 
+     */
+    public void pop() throws IOException{
+        this.clientSocket.close();
     }
 }

@@ -6,6 +6,7 @@
 
 package connection;
 
+import java.io.ObjectInputStream;
 import java.net.Socket;
 
 /**
@@ -18,7 +19,8 @@ public interface InterpreteMsg {
      * Parser of the Object received
      * @param msg the object received
      * @param socket the socket where the Object came from
+     * @param receive the inputstream of the client
      */
-    public void parseMsg(Object msg, Socket socket);
+    public void parseMsg(Object msg, Socket socket, ObjectInputStream receive);
     
 }

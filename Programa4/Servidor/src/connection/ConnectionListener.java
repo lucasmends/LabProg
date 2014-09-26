@@ -34,7 +34,7 @@ public class ConnectionListener implements Runnable {
                 client = server.accept();
                 connection = new ObjectInputStream(client.getInputStream());
                 login = connection.readObject();
-                interpretate.parseMsg(login, client);
+                interpretate.parseMsg(login, client, connection);
             }
         } catch (Exception e) {
             System.err.println("Error code: " + Codes.ERROR_LOGIN );

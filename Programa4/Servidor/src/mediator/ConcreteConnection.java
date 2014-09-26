@@ -10,12 +10,12 @@ import client.AbstractClient;
 import java.util.Vector;
 import msg.Codes;
 import msg.Mensage;
+import thread.Find;
 
 /**
  *
  * @author lucas
  */
-
 public class ConcreteConnection implements Connection {
 
     private final static ConcreteConnection instance = new ConcreteConnection();
@@ -66,21 +66,41 @@ public class ConcreteConnection implements Connection {
             return;
         }
         boolean check = true;
+        if (client.getLogin().equals("Servidor")) {
+            check = false;
+        }
         for (Object a : clients) {
             AbstractClient clientConnected = (Client) a;
             if (client.getLogin().equals(clientConnected.getLogin())) {
                 check = false;
+                break;
             }
         }
         if (check) {
-            new Thread((Client) client).start();
-            clients.add(client);
-            client.sendMensage(new Mensage(Codes.LOGIN_SUCCESS, client.getLogin(), null));
-            this.updateClientList();
+            new Thread((Client) client, client.getLogin()).start();
+
+            StringBuilder clients = new StringBuilder();
+            for (Object a : this.clients) {
+                AbstractClient clienT = (Client) a;
+                clients.append(clienT.getLogin()).append('\n');
+            }
+
+            client.sendMensage(new Mensage(Codes.LOGIN_SUCCESS, client.getLogin(), clients.toString()));
+
+            this.sendMensage(new Mensage(Codes.LOGIN, client.getLogin(), null));
+
+            this.clients.add(client);
+
+            System.out.println("Client " + client.getLogin() + " with IP: " + client.getIP() + " just logged in");
         } else {
-            Mensage loginInUse = new Mensage(Codes.ERROR_LOGIN_IN_USE, client.getLogin(), null);
-            client.sendMensage(loginInUse);
-            this.disconnet(client);
+            client.sendMensage(new Mensage(Codes.ERROR_LOGIN_IN_USE, client.getLogin(), null));
+            System.out.println("Name: " + client.getLogin() + " already in use, from IP: " + client.getIP());
+            try {
+                client.disconnect();
+            } catch (Exception e) {
+                System.err.println("Error code: " + Codes.ERROR_DISCONNECT + " from duplicate: " + client.getLogin() + ", ip: " + client.getIP());
+            }
+
         }
     }
 
@@ -88,9 +108,12 @@ public class ConcreteConnection implements Connection {
     public void disconnet(AbstractClient client) {
         try {
             client.disconnect();
+            clients.remove(client);
+            this.sendMensage(new Mensage(Codes.DISCONNECT, client.getLogin(), null));
         } catch (Exception e) {
             System.err.println("Error code: " + Codes.ERROR_DISCONNECT + " from: " + client.getLogin() + ", ip: " + client.getIP());
         }
+        System.out.println("Client: " + client.getLogin() + " with IP:" + client.getIP() + " just disconnected");
     }
 
     @Override
@@ -109,8 +132,27 @@ public class ConcreteConnection implements Connection {
         if (!clients.isEmpty()) {
             for (Object a : clients) {
                 AbstractClient client = (Client) a;
-                this.disconnet(client);
+                try {
+                    this.sendMensage(new Mensage(Codes.DISCONNECT, client.getLogin(), null));
+                    Find.thread(client.getLogin()).stop();
+                    client.disconnect();
+                } catch (Exception e) {
+                    System.err.println("Error code: " + Codes.ERROR_DISCONNECT + " from: " + client.getLogin() + ", ip: " + client.getIP());
+                }
+                System.out.println("Client: " + client.getLogin() + " with IP:" + client.getIP() + " just disconnected");
             }
         }
+    }
+
+    @Override
+    public void pop(AbstractClient client) {
+          try {
+            client.pop();
+            clients.remove(client);
+            this.sendMensage(new Mensage(Codes.DISCONNECT, client.getLogin(), null));
+        } catch (Exception e) {
+            System.err.println("Error code: " + Codes.ERROR_DISCONNECT + " from: " + client.getLogin() + ", ip: " + client.getIP());
+        }
+        System.out.println("Client: " + client.getLogin() + " with IP:" + client.getIP() + " just disconnected");
     }
 }
