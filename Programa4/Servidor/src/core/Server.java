@@ -11,7 +11,6 @@ import java.util.Scanner;
 import mediator.ConcreteConnection;
 import msg.Codes;
 import msg.Mensage;
-import thread.Find;
 
 /**
  *
