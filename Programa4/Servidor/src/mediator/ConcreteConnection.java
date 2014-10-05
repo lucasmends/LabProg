@@ -24,11 +24,45 @@ public class ConcreteConnection implements Connection {
         clients = new Vector();
     }
 
+    /**
+     * Singleton instance.
+     *
+     * @return the instance
+     */
     public static ConcreteConnection getInstance() {
         return instance;
     }
 
     private Vector clients;
+
+    /**
+     * Output the list with the connected clients.
+     */
+    public void clientsList() {
+        if(!clients.isEmpty())
+            for (Object client : clients) {
+                Client a = (Client) client;
+                System.out.println(a.getLogin());
+            }
+        else
+            System.out.println("");
+    }
+
+    /**
+     * Check if the client is connected.
+     *
+     * @param client the login to check
+     * @return the responce if it is connected
+     */
+    private boolean exists(String client) {
+
+        for (Object obj : clients) {
+            Client a = (Client) obj;
+            if (a.getLogin().equals(client));
+                return true;
+        }
+        return false;
+    }
 
     @Override
     public synchronized void sendMensage(Mensage msg) {
@@ -146,7 +180,7 @@ public class ConcreteConnection implements Connection {
 
     @Override
     public void pop(AbstractClient client) {
-          try {
+        try {
             client.pop();
             clients.remove(client);
             this.sendMensage(new Mensage(Codes.DISCONNECT, client.getLogin(), null));
@@ -154,5 +188,24 @@ public class ConcreteConnection implements Connection {
             System.err.println("Error code: " + Codes.ERROR_DISCONNECT + " from: " + client.getLogin() + ", ip: " + client.getIP());
         }
         System.out.println("Client: " + client.getLogin() + " with IP:" + client.getIP() + " just disconnected");
+    }
+
+    /**
+     * Tries to kick a client from the server.
+     * @param client the client's login to be kicked
+     * @return true if the client exists and was kicked and false if it does not exist;
+     */
+    public boolean pop(String client) {
+        if (this.exists(client)) {
+            for (Object a : clients) {
+                Client cli = (Client) a;
+                if (cli.getLogin().equals(client)) {
+                    this.pop(cli);
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

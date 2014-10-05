@@ -38,17 +38,7 @@ public class Server {
 
         pegarLogins.start();
         
-        System.out.println("Digite quit para sair, msg para enviar mensagem para todos");
-        Scanner in = new Scanner(System.in);
-        String mensagem = in.nextLine();
-        while (!mensagem.equals("quit")) {
-            if(mensagem.equals("msg")){
-                System.out.print("Mensagem: ");
-                mensagem = in.nextLine();
-                ConcreteConnection.getInstance().sendMensage(new Mensage(Codes.MENSAGE_ALL, "Servidor", mensagem));
-            }
-            mensagem = in.nextLine();
-        }
+        new Commands().terminal();
 
         System.out.println("Saindo...");
         pegarLogins.stop();
