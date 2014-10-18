@@ -32,7 +32,7 @@ public class ConnectionFactory {
     
     public Connection connection() throws ClassNotFoundException, SQLException{
         Class.forName("com.mysql.jdbc.Driver");
-        return (Connection) DriverManager.getConnection("jdbx:mysql://"+ getServer() + ":" + getTcpport() + 
+        return (Connection) DriverManager.getConnection("jdbc:mysql://"+ getServer() + ":" + getTcpport() + 
                                                         "/" + getBase(), getUser(), getPassword());
     }
     
